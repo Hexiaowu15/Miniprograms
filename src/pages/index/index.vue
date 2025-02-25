@@ -2,17 +2,20 @@
   <view class="content">
     <image class="logo" src="/static/logo.png" />
     <view class="text-area">
-      <text class="title">你大爷</text>
+      <text class="title">{{ title }}</text>
     </view>
   </view>
 </template>
 
 <script setup lang="ts">
+defineOptions({
+  name: 'HomePage'
+});
 import { ref } from 'vue'
-const title = ref('Hello')
+const title = ref('你家吗')
 </script>
 
-<style>
+<style lang="scss">
 .content {
   display: flex;
   flex-direction: column;
@@ -36,6 +39,6 @@ const title = ref('Hello')
 
 .title {
   font-size: 36rpx;
-  color: #8f8f94;
+  color: $uni-color-error;
 }
 </style>
