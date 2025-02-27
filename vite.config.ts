@@ -4,9 +4,6 @@ import eslintPlugin from "vite-plugin-eslint";
 import AutoImport from "unplugin-auto-import/vite";
 // https://vitejs.dev/config/
 export default defineConfig({
-  build:{
-    transpileDependencies:["uview-ui"]
-  },
   plugins: [
     AutoImport({
       imports: ["vue", "pinia", "uni-app"],
@@ -30,4 +27,7 @@ export default defineConfig({
       failOnError: false, // eslint报错不影响运行
     }),
   ],
+  optimizeDeps: {
+    include: ["@dcloudio/uni-ui"], // 替换为你的依赖项名称
+  },
 });

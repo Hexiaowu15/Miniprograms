@@ -4,6 +4,11 @@
     <view class="text-area">
       <text class="title">{{ title }}</text>
     </view>
+    <wd-button>主要按钮</wd-button>
+    <wd-button type="success">成功按钮</wd-button>
+    <wd-button type="info">信息按钮</wd-button>
+    <wd-button type="warning">警告按钮</wd-button>
+    <wd-button type="error">危险按钮</wd-button>
   </view>
 </template>
 
@@ -11,11 +16,12 @@
 defineOptions({
   name: 'HomePage'
 });
-import { ref } from 'vue'
-const title = ref('你家吗')
+// import { ref } from 'vue'
+const title = ref('你家在那里')
+
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .content {
   display: flex;
   flex-direction: column;
@@ -39,6 +45,7 @@ const title = ref('你家吗')
 
 .title {
   font-size: 36rpx;
-  color: $uni-color-error;
+  // color: ;
+  height: var(--status-bar-height);
 }
 </style>
