@@ -56,12 +56,30 @@
 </template>
 
 <script setup lang="ts">
-defineOptions({
-  name: 'HomePage'
-});
-// import { ref } from 'vue'
-// const title = ref('你家在那里')
+import { ref, onMounted } from 'vue'
+import { weatherApi } from '@/api/weather'
+import type { WeatherData, ForecastData } from '@/api/weather'
 
+const currentWeather = ref<WeatherData>()
+const forecast = ref<ForecastData[]>([])
+
+const fetchWeatherData = async () => {
+  try {
+    const cityCode = 'your-city-code'  // 替换为实际的城市代码
+    
+    // 获取当前天气
+    currentWeather.value = await weatherApi.getCurrentWeather(cityCode)
+    
+    // 获取天气预报
+    forecast.value = await weatherApi.getForecast(cityCode)
+  } catch (error) {
+    console.error('获取天气数据失败:', error)
+  }
+}
+
+onMounted(() => {
+  fetchWeatherData()
+})
 </script>
 
 <style lang="scss" scoped>
