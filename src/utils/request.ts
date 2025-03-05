@@ -27,8 +27,8 @@ const createRequest = (baseURL: string) => {
     (response) => {
       const { data } = response
       
-      if (data.code === 200) {
-        return data.data
+      if (data.code === 200||data.status === '1') {
+        return data
       }
       
       uni.showToast({

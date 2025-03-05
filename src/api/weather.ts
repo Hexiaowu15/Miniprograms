@@ -1,6 +1,6 @@
 import { request } from "@/utils/request";
-import { Weather } from "@/enums/weather";
-
+import { WeatherIcon } from "@/enums";
+import { GaudKey } from "@/constants";
 // 实时天气返回数据类型
 export interface LiveWeatherResponse {
   status: string;
@@ -54,17 +54,34 @@ export interface WeatherResponse {
 export interface WeatherData {
   city: string;
   temperature: string;
-  weather: Weather;
+  weather: string;
+  weatherIcon: WeatherIcon;
   windDirection: string;
   windLevel: string;
   date: string;
 }
 
+// 获取城市编码返回数据类型
+export interface CityCodeResponse {
+  status: string;
+  info: string;
+  regeocode: {
+    addressComponent: {
+      country: string; // 坐标点所在国家名称
+      province: string; // 坐标点所在省名称
+      city: string; // 坐标点所在城市名称
+      citycode: string; //城市编码
+      district: string; // 坐标点所在区
+      adcode: string; //行政区编码
+    };
+  };
+}
 export interface ForecastData {
   date: string;
   dayOfWeek: string;
   temperature: string;
-  weather: Weather;
+  weather: string;
+  weatherIcon: WeatherIcon
   windDirection: string;
   windLevel: string;
 }
@@ -81,24 +98,52 @@ const weekMap: Record<string, string> = {
 };
 
 // 天气文字到图标的映射
-const weatherIconMap: Record<string, Weather> = {
-  晴: Weather.Sunny,
-  多云: Weather.PartlyCloudy,
-  阴: Weather.Cloudy,
-  小雨: Weather.Rainy,
-  中雨: Weather.Rainy,
-  大雨: Weather.Rainy,
-  暴雨: Weather.Stormy,
-  雪: Weather.Snowy,
-  雾: Weather.Foggy,
+const weatherIconMap: Record<string, WeatherIcon> = {
+  晴: WeatherIcon.Sunny,
+  多云: WeatherIcon.PartlyCloudy,
+  阴: WeatherIcon.Cloudy,
+  小雨: WeatherIcon.Rainy,
+  中雨: WeatherIcon.Rainy,
+  大雨: WeatherIcon.Rainy,
+  暴雨: WeatherIcon.Stormy,
+  雪: WeatherIcon.Snowy,
+  雾: WeatherIcon.Foggy,
   // ... 可以根据需要添加更多映射
 };
 
 export const weatherApi = {
+  // 获取城市编码
+  /**
+   * 根据地理位置获取城市编码
+   * @param {string} location - 地理位置信息
+   * @returns {Promise<CityCodeResponse['regeocode']>} - 返回包含城市编码的对象
+   * @throws {Error} - 如果获取城市编码失败，抛出错误
+   */
+  async getCityCode(location: string): Promise<CityCodeResponse['regeocode']> {
+    // 定义请求参数
+    const params = {
+      key: GaudKey,
+      location,
+      extensions: "base",
+    };
+    // 发送请求获取城市编码
+    const response = await request.weather.get<CityCodeResponse>(
+      "v3/geocode/regeo",
+      params
+    );
+    // 检查响应状态和是否存在 regeocode 数据
+    if (response.info=="OK") {
+      // 提取城市编码
+      const cityCode = response.regeocode;
+      return cityCode;
+    }
+    // 如果获取失败，抛出错误
+    throw new Error("获取城市编码失败");
+  },
   // 获取实时天气
   async getCurrentWeather(cityCode: string) {
     const params = {
-      key: "your-amap-key",
+      key: GaudKey,
       city: cityCode,
       extensions: "base",
     };
@@ -108,13 +153,14 @@ export const weatherApi = {
       params
     );
 
-    if (response.status === "1" && response.lives.length > 0) {
+    if (response.status == "1" && response.lives.length > 0) {
       const live = response.lives[0];
 
       const currentWeather: WeatherData = {
         city: live.city,
         temperature: live.temperature,
-        weather: weatherIconMap[live.weather] || "sunny",
+        weather: live.weather,
+        weatherIcon: weatherIconMap[live.weather] || "sunny",
         windDirection: live.winddirection,
         windLevel: live.windpower,
         date: live.reporttime.split(" ")[0], // 只取日期部分
@@ -129,7 +175,7 @@ export const weatherApi = {
   // 获取天气预报
   async getForecast(cityCode: string) {
     const params = {
-      key: "your-amap-key", // 你的高德API key
+      key: GaudKey, // 你的高德API key
       city: cityCode,
       extensions: "all",
     };
@@ -139,7 +185,7 @@ export const weatherApi = {
       params
     );
 
-    if (response.status === "1" && response.forecasts.length > 0) {
+    if (response.status == "1" && response.forecasts.length > 0) {
       const forecast = response.forecasts[0];
       const today = forecast.casts[0];
 
@@ -147,7 +193,8 @@ export const weatherApi = {
       const currentWeather: WeatherData = {
         city: forecast.city,
         temperature: today.daytemp,
-        weather: weatherIconMap[today.dayweather] || Weather.Sunny,
+        weatherIcon: weatherIconMap[today.dayweather] || WeatherIcon.Sunny,
+        weather: today.dayweather,
         windDirection: today.daywind,
         windLevel: today.daypower,
         date: today.date,
@@ -160,7 +207,8 @@ export const weatherApi = {
           date: cast.date,
           dayOfWeek: weekMap[cast.week] || "未知",
           temperature: cast.daytemp,
-          weather: weatherIconMap[cast.dayweather] || Weather.Sunny,
+          weatherIcon: weatherIconMap[cast.dayweather] || WeatherIcon.Sunny,
+          weather: cast.dayweather,
           windDirection: cast.daywind,
           windLevel: cast.daypower,
         }));

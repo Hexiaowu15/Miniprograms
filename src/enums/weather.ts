@@ -1,4 +1,4 @@
-export enum Weather {
+export enum WeatherIcon {
   Sunny = "☀️", //  晴
   PartlyCloudy = "⛅️", //  多云
   Cloudy = "☁️", //  阴

@@ -18,5 +18,8 @@
     "titleBar.inactiveBackground": "#e67e1a99",
     "titleBar.inactiveForeground": "#15202b99"
   },
-  "peacock.color": "#e67e1a"
+  "peacock.color": "#e67e1a",
+  "cSpell.words": [
+    "daypower"
+  ]
 }
