@@ -26,7 +26,7 @@ defineOptions({
   name: 'IndexPage'
 });
 
-const handleTabClick = (tab: string) => {
+const handleTabClick = (tab: 'home' | 'stats' | 'profile') => {
   const routes = {
     'home': '/pages/index/index',
     'stats': '/pages/stats/index',
