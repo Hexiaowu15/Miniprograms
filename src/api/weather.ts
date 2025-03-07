@@ -81,7 +81,7 @@ export interface ForecastData {
   dayOfWeek: string;
   temperature: string;
   weather: string;
-  weatherIcon: WeatherIcon
+  weatherIcon: WeatherIcon;
   windDirection: string;
   windLevel: string;
 }
@@ -119,7 +119,7 @@ export const weatherApi = {
    * @returns {Promise<CityCodeResponse['regeocode']>} - 返回包含城市编码的对象
    * @throws {Error} - 如果获取城市编码失败，抛出错误
    */
-  async getCityCode(location: string): Promise<CityCodeResponse['regeocode']> {
+  async getCityCode(location: string): Promise<CityCodeResponse["regeocode"]> {
     // 定义请求参数
     const params = {
       key: GaudKey,
@@ -131,8 +131,8 @@ export const weatherApi = {
       "v3/geocode/regeo",
       params
     );
-    // 检查响应状态和是否存在 regeocode 数据
-    if (response.info=="OK") {
+    // 检查是否存在 regeocode 数据
+    if (response.regeocode) {
       // 提取城市编码
       const cityCode = response.regeocode;
       return cityCode;
@@ -153,7 +153,7 @@ export const weatherApi = {
       params
     );
 
-    if (response.status == "1" && response.lives.length > 0) {
+    if (response.lives.length > 0) {
       const live = response.lives[0];
 
       const currentWeather: WeatherData = {
@@ -185,7 +185,7 @@ export const weatherApi = {
       params
     );
 
-    if (response.status == "1" && response.forecasts.length > 0) {
+    if (response.forecasts.length > 0) {
       const forecast = response.forecasts[0];
       const today = forecast.casts[0];
 

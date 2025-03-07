@@ -62,7 +62,7 @@ const handleTabClick = (tab: 'home' | 'stats' | 'profile') => {
   justify-content: space-around;
   align-items: center;
   padding-bottom: calc(env(safe-area-inset-bottom));
-  
+
   .tab-item {
     height: 100%;
     flex: 1;
@@ -74,37 +74,39 @@ const handleTabClick = (tab: 'home' | 'stats' | 'profile') => {
     position: relative;
     transition: all 0.3s ease;
     padding: 6rpx 0;
-    
+
     :deep(.wd-icon) {
       font-size: 22px !important;
       color: #999;
     }
-    
+
     .tab-text {
       font-size: 20rpx;
       color: #999;
       font-weight: 400;
     }
-    
+
     &.active {
       .tab-text {
         background: linear-gradient(135deg, #4A90E2 0%, #2b7cd9 100%);
         -webkit-background-clip: text;
+        background-clip: text;
         color: transparent;
         font-weight: 500;
       }
-      
+
       :deep(.wd-icon) {
         background: linear-gradient(135deg, #4A90E2 0%, #2b7cd9 100%);
         -webkit-background-clip: text;
+        background-clip: text;
         color: transparent !important;
       }
-      
+
       &::after {
         display: none;
       }
     }
-    
+
     &:active {
       transform: scale(0.95);
       opacity: 0.9;

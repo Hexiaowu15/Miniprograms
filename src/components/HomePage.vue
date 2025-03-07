@@ -309,6 +309,7 @@ onMounted(() => {
         font-weight: bold;
         background: linear-gradient(135deg, #2b7cd9 0%, #4a90e2 100%);
         -webkit-background-clip: text;
+        background-clip: text;
         color: transparent;
         display: inline-block;
       }
@@ -496,6 +497,7 @@ onMounted(() => {
           font-size: 36rpx;
           background: linear-gradient(135deg, #333 0%, #666 100%);
           -webkit-background-clip: text;
+          background-clip: text;
           color: transparent;
           font-weight: bold;
         }
@@ -558,6 +560,7 @@ onMounted(() => {
             .feature-title {
               background: linear-gradient(135deg, #333 0%, #666 100%);
               -webkit-background-clip: text;
+              background-clip: text;
               color: transparent;
             }
           }
@@ -569,6 +572,9 @@ onMounted(() => {
 
             .count-value {
               background: linear-gradient(135deg, #4A90E2 0%, #2b7cd9 100%);
+              background-clip: text;
+              -webkit-background-clip: text;
+              color: transparent;
               -webkit-background-clip: text;
               color: transparent;
             }
@@ -631,6 +637,7 @@ onMounted(() => {
           .feature-title {
             background: linear-gradient(135deg, #333 0%, #666 100%);
             -webkit-background-clip: text;
+            background-clip: text;
             color: transparent;
           }
 
@@ -642,6 +649,7 @@ onMounted(() => {
             .data-value {
               background: linear-gradient(135deg, #4A90E2 0%, #2b7cd9 100%);
               -webkit-background-clip: text;
+              background-clip: text;
               color: transparent;
             }
 

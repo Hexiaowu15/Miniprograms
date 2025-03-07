@@ -10,6 +10,7 @@ onHide(() => {
   console.log("App Hide");
 });
 </script>
-<style lang="scss">
-
-</style>
+<template>
+  <wd-toast />
+</template>
+<style lang="scss"></style>
