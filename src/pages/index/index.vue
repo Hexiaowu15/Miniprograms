@@ -1,18 +1,19 @@
 <template>
   <view class="container">
-    <HomePage />
+    <HomePage v-if="currentTab === 'home'" />
+    <MyPage v-if="currentTab === 'profile'" />
     <!-- Tabbar -->
     <view class="tabbar">
-      <view class="tab-item active" @click="handleTabClick('home')">
-        <wd-icon name="home" size="24px" color="#4A90E2"></wd-icon>
+      <view class="tab-item" :class="{ active: currentTab === 'home' }" @click="handleTabClick('home')">
+        <wd-icon name="home" size="24px" :color="currentTab === 'home' ? '#4A90E2' : '#666'"></wd-icon>
         <text class="tab-text">首页</text>
       </view>
       <view class="tab-item" @click="handleTabClick('stats')">
         <wd-icon name="chart" size="24px" color="#666"></wd-icon>
         <text class="tab-text">统计</text>
       </view>
-      <view class="tab-item" @click="handleTabClick('profile')">
-        <wd-icon name="user" size="24px" color="#666"></wd-icon>
+      <view class="tab-item" :class="{ active: currentTab === 'profile' }" @click="handleTabClick('profile')">
+        <wd-icon name="user" size="24px" :color="currentTab === 'profile' ? '#4A90E2' : '#666'"></wd-icon>
         <text class="tab-text">我的</text>
       </view>
     </view>
@@ -21,30 +22,18 @@
 
 <script setup lang="ts">
 import HomePage from '@/components/HomePage.vue';
+import MyPage from '@/components/MyPage.vue';
 
-defineOptions({
-  name: 'IndexPage'
-});
+
+const currentTab = ref<'home' | 'stats' | 'profile'>('home');
 
 const handleTabClick = (tab: 'home' | 'stats' | 'profile') => {
-  const routes = {
-    'home': '/pages/index/index',
-    'stats': '/pages/stats/index',
-    'profile': '/pages/profile/index'
-  };
-
-  const route = routes[tab];
-  if (route && route !== '/pages/index/index') {
-    uni.navigateTo({
-      url: route,
-      fail: (err) => {
-        uni.showToast({
-          title: '页面开发中',
-          icon: 'none',
-          duration: 2000
-        });
-        console.error('导航失败：', err);
-      }
+  currentTab.value = tab;
+  if (tab === 'stats') {
+    uni.showToast({
+      title: '页面开发中',
+      icon: 'none',
+      duration: 2000
     });
   }
 };
