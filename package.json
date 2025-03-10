@@ -2,7 +2,7 @@
   "name": "码上记词",
   "version": "1.0.0",
   "scripts": {
-    "dev": "uni -p mp-weixin --minify",
+    "dev": "uni -p mp-weixin",
     "build": "uni build -p mp-weixin --minify",
     "type-check": "vue-tsc --noEmit"
   },

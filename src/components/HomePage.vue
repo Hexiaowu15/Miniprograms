@@ -24,14 +24,19 @@
       </view>
 
       <view class="forecast-container">
-        <view class="forecast-item" v-for="(item) in forecastData" :key="item.date">
-          <text class="day">{{ item.dayOfWeek }}</text>
-          <view class="weather-icon">{{ item.weatherIcon }}</view>
-          <text class="forecast-temp">{{ item.temperature }}°C</text>
-          <view class="forecast-info">
-            <text class="forecast-desc">{{ item.weather }}</text>
-            <text class="forecast-wind">{{ `${item.windDirection}风${item.windLevel}级` }}</text>
-          </view>
+        <view class="forecast-item" v-for="(item, index) in forecastData" :key="index">
+          <template v-if="item">
+            <text class="day">{{ item.dayOfWeek }}</text>
+            <view class="weather-icon">{{ item.weatherIcon }}</view>
+            <text class="forecast-temp">{{ item.temperature }}°C</text>
+            <view class="forecast-info">
+              <text class="forecast-desc">{{ item.weather }}</text>
+              <text class="forecast-wind">{{ `${item.windDirection}风${item.windLevel}级` }}</text>
+            </view>
+          </template>
+          <template v-else>
+            <wd-skeleton theme="image" animation="gradient" />
+          </template>
         </view>
       </view>
     </view>
@@ -110,6 +115,7 @@
 <script setup lang="ts">
 import { weatherApi } from '@/api/weather'
 import type { CityCodeResponse, WeatherData, ForecastData } from '@/api/weather'
+import type { WeatherIcon } from '@/enums';
 // 风景照片轮播图数据
 const landscapes = ref([
   {
@@ -181,9 +187,26 @@ const todoList = ref([
 ]);
 
 // ===天气模块===
-let currentWeatherData = ref<WeatherData>();
-let forecastData = ref<ForecastData[]>();
-let cityData = ref<CityCodeResponse['regeocode']>()
+let currentWeatherData = ref<WeatherData>({
+  date: '2025-01-01',
+  city: '',
+  temperature: '18',
+  weather: '晴',
+  weatherIcon: '☀️' as WeatherIcon,
+  windDirection: '西北风',
+  windLevel: '3',
+});
+let forecastData = ref<ForecastData[]>(Array(3).fill(null));
+let cityData = ref<CityCodeResponse['regeocode']>({
+  addressComponent: {
+    country: '',
+    province: '',
+    city: '',
+    citycode: '',
+    district: '成都市',
+    adcode: '',
+  }
+})
 /** 获取用户地理位置信息 */
 const getLocation = () => {
   return new Promise<UniApp.GetLocationSuccess | { longitude: number, latitude: number }>((resolve) => {

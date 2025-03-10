@@ -1,23 +1,4 @@
-// /**
-//  * 工具函数类型定义
-//  */
-// export type Utils = {
-//   debounce: <T extends (...args: unknown[]) => unknown>(
-//     fn: T,
-//     delay?: number
-//   ) => (...args: Parameters<T>) => void;
-//   throttle: <T extends (...args: unknown[]) => unknown>(
-//     fn: T,
-//     interval?: number
-//   ) => (...args: Parameters<T>) => void;
-//   debounceWithCancel: <T extends (...args: unknown[]) => unknown>(
-//     fn: T,
-//     delay?: number
-//   ) => {
-//     run: (...args: Parameters<T>) => void;
-//     cancel: () => void;
-//   };
-// };
+
 
 /**
  * 防抖函数
