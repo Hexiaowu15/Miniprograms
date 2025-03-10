@@ -1,66 +1,64 @@
-import { useToast } from 'wot-design-uni'
-
-type ToastPosition = 'top' | 'middle-top' | 'middle' | 'bottom'
-type ToastDirection = 'vertical' | 'horizontal'
-type ToastIconName = 'success' | 'error' | 'warning' | 'loading' | 'info'
-type ToastLoadingType = 'outline' | 'ring'
-
-export interface ToastOptions {
-  msg?: string
-  duration?: number
-  direction?: ToastDirection
-  iconName?: ToastIconName
-  iconSize?: number
-  iconClass?: string
-  classPrefix?: string
-  position?: ToastPosition
-  zIndex?: number
-  loadingType?: ToastLoadingType
-  loadingColor?: string
-  loadingSize?: number
-  cover?: boolean
-  selector?: string
+interface ToastOptions {
+  title: string;
+  duration?: number;
+  icon?: "success" | "error" | "loading" | "none";
+  mask?: boolean;
+  position?: "top" | "center" | "bottom";
+  success?: () => void;
+  fail?: (err: Error) => void;
+  complete?: () => void;
 }
 
-class ToastService {
-  private readonly toast = useToast()
+const defaultOptions: Partial<ToastOptions> = {
+  duration: 2000,
+  icon: "none",
+  mask: false,
+  position: "center",
+};
 
-  private show(options: string | ToastOptions) {
-    if (typeof options === 'string') {
-      return this.toast.show(options)
+class Toast {
+  private debounceTimer: number | null = null;
+  private show(options: ToastOptions) {
+    // 如果已经有计时器在运行，则不执行新的 toast 显示
+    if (this.debounceTimer !== null) {
+      return;
     }
-    return this.toast.show(options)
+    const mergedOptions = { ...defaultOptions, ...options };
+    uni.showToast({
+      title: mergedOptions.title,
+      duration: mergedOptions.duration,
+      icon: mergedOptions.icon,
+      mask: mergedOptions.mask,
+      position: mergedOptions.position,
+      success: mergedOptions.success,
+      fail: mergedOptions.fail,
+      complete: mergedOptions.complete,
+    });
+    // 设置计时器，1秒后允许再次显示 toast
+    this.debounceTimer = setTimeout(() => {
+      this.debounceTimer = null;
+    }, 1000) as unknown as number;
   }
 
-  success(options: string | Omit<ToastOptions, 'iconName'>) {
-    const opts = typeof options === 'string' ? { msg: options } : options
-    return this.show({ ...opts, iconName: 'success' })
+  success(title: string, options: Partial<ToastOptions> = {}) {
+    this.show({ ...options, title, icon: "success" });
   }
 
-  error(options: string | Omit<ToastOptions, 'iconName'>) {
-    const opts = typeof options === 'string' ? { msg: options } : options
-    return this.show({ ...opts, iconName: 'error' })
+  error(title: string, options: Partial<ToastOptions> = {}) {
+    this.show({ ...options, title, icon: "error" });
   }
 
-  warning(options: string | Omit<ToastOptions, 'iconName'>) {
-    const opts = typeof options === 'string' ? { msg: options } : options
-    return this.show({ ...opts, iconName: 'warning' })
+  loading(title: string, options: Partial<ToastOptions> = {}) {
+    this.show({ ...options, title, icon: "loading" });
   }
 
-  info(options: string | Omit<ToastOptions, 'iconName'>) {
-    const opts = typeof options === 'string' ? { msg: options } : options
-    return this.show({ ...opts, iconName: 'info' })
+  info(title: string, options: Partial<ToastOptions> = {}) {
+    this.show({ ...options, title, icon: "none" });
   }
 
-  loading(options: string | Omit<ToastOptions, 'iconName'>) {
-    const opts = typeof options === 'string' ? { msg: options } : options
-    return this.toast.loading({ ...opts, iconName: 'loading' })
-  }
-
-  close() {
-    this.toast.close()
+  hide() {
+    uni.hideToast();
   }
 }
-const toast = new ToastService()
-// 修复为正确的导出语句
-export { toast };
+
+export const toast = new Toast();

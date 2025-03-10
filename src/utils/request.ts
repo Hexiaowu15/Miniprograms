@@ -2,7 +2,10 @@ import Request from "luch-request";
 import { ApiBaseUrl } from "@/enums/index";
 import { WHITE_LIST } from "@/constants";
 import { useUserStore } from "@/stores/user";
-import { toast } from "@/utils/toast";
+import { toast as $toast } from "@/utils/toast";
+
+// 添加一个全局标志，用于防止重复跳转
+let isRedirecting = false;
 // 创建请求实例的工厂函数
 const createRequest = (baseURL: string) => {
   const http = new Request({
@@ -12,7 +15,6 @@ const createRequest = (baseURL: string) => {
       "Content-Type": "application/json",
     },
   });
-
   // 请求拦截器
   http.interceptors.request.use(
     async (config) => {
@@ -21,11 +23,22 @@ const createRequest = (baseURL: string) => {
 
       // 优先处理白名单请求
       if (inWhitelist) return config;
-
       // 校验登录状态
       if (!userStore.isLoggedIn) {
-        uni.redirectTo({ url: "/pages/login/login" });
-        toast.error("未登录");
+        // 使用全局标志防止重复跳转
+        if (!isRedirecting) {
+          isRedirecting = true;
+          // 使用防抖函数，确保只执行一次跳转
+          uni.reLaunch({
+            url: "/pages/login/login",
+            complete: () => {
+              // 重置全局标志
+              isRedirecting = false;
+            },
+          });
+          // 确保 $toast 存在再调用 error，且只提示一次
+        }
+        $toast?.error("未登录");
         return Promise.reject("未登录");
       }
 
@@ -37,10 +50,10 @@ const createRequest = (baseURL: string) => {
             ...config.header,
             Authorization: `Bearer ${userStore.token}`,
           };
-        } catch (error) {
+        } catch {
           userStore.logout();
-          toast.error(`登录凭证已过期，请重新登录:${error}`);
-          return Promise.reject(`登录凭证已过期，请重新登录:${error}`);
+          $toast?.error(`请重新登录`);
+          return Promise.reject("请重新登录");
         }
       }
       config.header = {
@@ -49,8 +62,9 @@ const createRequest = (baseURL: string) => {
       };
       return config;
     },
-    (error) => {
-      return Promise.reject(error);
+    () => {
+      $toast?.error("发起请求失败");
+      return Promise.reject("发起请求失败");
     }
   );
 
@@ -61,20 +75,21 @@ const createRequest = (baseURL: string) => {
 
       if (data.code === 200 || data.status === "1") {
         return data;
-      }
-
-      toast.error(data.message || "请求失败");
-      return Promise.reject(data);
-    },
-    (error) => {
-      if (error?.statusCode === 401 || error?.statusCode === 403) {
+      } else if (data.code === 401 || data.code === 403) {
         const userStore = useUserStore();
         // token 过期，清除用户信息并跳转到登录页
         userStore.logout();
-      } else {
-        toast.error("网络异常，请稍后重试");
+        $toast?.error(data.message || "请求失败");
+        return Promise.reject(data.message || "请求失败");
       }
-      return Promise.reject(error);
+    },
+    (error) => {
+      $toast?.error(
+        typeof error === "string" ? error : error?.errMsg || "请求失败"
+      );
+      return Promise.reject(
+        typeof error === "string" ? error : error?.errMsg || "请求失败"
+      );
     }
   );
 

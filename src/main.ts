@@ -10,6 +10,7 @@ export function createApp() {
   // 路由拦截器
   setupRouteInterceptor();
 
+  
   return {
     app,
   };

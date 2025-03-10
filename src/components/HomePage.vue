@@ -184,7 +184,7 @@ const todoList = ref([
 let currentWeatherData = ref<WeatherData>();
 let forecastData = ref<ForecastData[]>();
 let cityData = ref<CityCodeResponse['regeocode']>()
-// 获取用户地理位置信息
+/** 获取用户地理位置信息 */
 const getLocation = () => {
   return new Promise<UniApp.GetLocationSuccess | { longitude: number, latitude: number }>((resolve) => {
     uni.getLocation({
@@ -200,43 +200,41 @@ const getLocation = () => {
     });
   });
 }
-// 传入经纬度获取城市代码
+/** 传入经纬度获取城市代码 */
 const getCityCode = async (longitude: number, latitude: number) => {
-  try {
-    const location = longitude + ',' + latitude
-    const res = await weatherApi.getCityCode(location);
-    return res;
-  } catch (error) {
-    console.error('获取城市代码失败:', error);
-  }
+  const location = longitude + ',' + latitude
+  const res = await weatherApi.getCityCode(location);
+  return res;
 }
-// 传入城市代码获取实时天气数据
+/** 传入城市代码获取实时天气数据 */
 const getWeatherData = async (cityCode: string) => {
-  try {
-    const [currentWeather, forecast] = await Promise.all([
-      weatherApi.getCurrentWeather(cityCode),
-      weatherApi.getForecast(cityCode)
-    ]);
-    return { currentWeather, forecast };
-  } catch (error) {
-    console.error('获取天气数据失败：', error);
-  }
+  const [currentWeather, forecast] = await Promise.all([
+    weatherApi.getCurrentWeather(cityCode),
+    weatherApi.getForecast(cityCode)
+  ]);
+  return { currentWeather, forecast };
 }
 
 const initWeatherData = async () => {
   try {
+    // 1. 获取位置信息
     const location = await getLocation();
-    const cityInfo = await getCityCode(location.longitude, location.latitude);
-    // 提取 adcode，避免重复使用可选链和空值合并操作符
-    const adcode = cityInfo?.addressComponent?.adcode ?? 'unknown';
-    // 这里需要根据实际需求使用 currentWeather 和 forecast
-    const weatherData = await getWeatherData(adcode);
+    if (!location) throw new Error('获取位置信息失败');
 
+    // 2. 获取城市代码
+    const cityInfo = await getCityCode(location.longitude, location.latitude);
+    if (!cityInfo?.addressComponent?.adcode) return;
+
+    // 3. 获取天气数据
+    const weatherData = await getWeatherData(cityInfo.addressComponent.adcode);
+    if (!weatherData) return;
+
+    // 4. 更新数据
     cityData.value = cityInfo;
-    currentWeatherData.value = weatherData?.currentWeather;
-    forecastData.value = weatherData?.forecast.forecast;
+    currentWeatherData.value = weatherData.currentWeather;
+    forecastData.value = weatherData.forecast.forecast;
   } catch (error) {
-    console.error('初始化天气数据失败：', error);
+    console.error('获取天气数据失败：', error);
   }
 };
 // 页面加载时获取天气数据

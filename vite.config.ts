@@ -28,6 +28,6 @@ export default defineConfig({
     }),
   ],
   optimizeDeps: {
-    include: ["@dcloudio/uni-ui"], // 替换为你的依赖项名称
+    include: [], // 替换为你的依赖项名称
   },
 });

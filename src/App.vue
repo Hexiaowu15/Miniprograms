@@ -1,5 +1,10 @@
 <script setup lang="ts">
-import { onLaunch, onShow, onHide } from "@dcloudio/uni-app";
+import { toast } from "@/utils/toast";
+import { utils } from "./utils";
+// 提供toast实例
+provide("toast", toast);
+// 提供utils实例
+provide("utils", utils);
 onLaunch(() => {
   console.log("App Launch");
 });
@@ -10,7 +15,5 @@ onHide(() => {
   console.log("App Hide");
 });
 </script>
-<template>
-  <wd-toast />
-</template>
+
 <style lang="scss"></style>
